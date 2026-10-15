@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Pro - Burger POS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --bg-principal: #0b0c10;
+            --bg-tarjetas: #19202b;
+            --neon-amber: #ffc107;
+            --neon-blue: #00d2ff;
+            --neon-green: #2ecc71;
+            --neon-red: #e74c3c;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            background-image:
+                radial-gradient(at 5% 5%, rgba(0, 210, 255, 0.06) 0px, transparent 45%),
+                radial-gradient(at 95% 95%, rgba(255, 193, 7, 0.04) 0px, transparent 45%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .navbar-custom {
+            background: rgba(15, 20, 28, 0.85) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+        }
+
+        .form-control-dark, .form-select-dark {
+            background-color: #0f141c !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+        }
+        .form-control-dark::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+        .form-control-dark:focus, .form-select-dark:focus {
+            border-color: var(--neon-blue) !important;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.35) !important;
+            background-color: #131a24 !important;
+            color: #ffffff !important;
+        }
+
+        .card-premium {
+            background: var(--bg-tarjetas) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+        }
+        .card-header-custom {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* TARJETAS ESTILO CARPETA */
+        .folder-card {
+            background: #141b26;
+            border-radius: 18px;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ESTADO VERDE (CON STOCK) */
+        .folder-card.has-stock {
+            border: 1px solid rgba(46, 204, 113, 0.4) !important;
+            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.08);
+        }
+        .folder-card.has-stock::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon-green);
+        }
+        .folder-card.has-stock .folder-icon { color: var(--neon-green) !important; }
+
+        /* ESTADO ROJO (VACÍO O SIN STOCK) */
+        .folder-card.no-stock {
+            border: 1px solid rgba(231, 76, 60, 0.4) !important;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.08);
+        }
+        .folder-card.no-stock::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon-red);
+        }
+        .folder-card.no-stock .folder-icon { color: var(--neon-red) !important; }
+
+        .folder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            background: #1a2332;
+        }
+
+        /* MODAL POPUP */
+        .modal-content-custom {
+            background: #151c24 !important;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 20px;
+            color: #ffffff !important;
+        }
+
+        .custom-table {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+            --bs-table-bg: transparent !important;
+            --bs-table-color: #ffffff !important;
+            --bs-table-border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        .custom-table thead th {
+            background-color: #0b0f17 !important;
+            color: var(--neon-blue) !important;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 12px !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .custom-table tbody tr td {
+            color: #ffffff !important;
+            background-color: #121824 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 12px !important;
+            vertical-align: middle;
+        }
+
+        .stock-control-box {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-stk-step {
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-stk-minus { background: rgba(231, 76, 60, 0.25); color: #ff4d4d; }
+        .btn-stk-minus:hover { background: #e74c3c; color: #fff; }
+        .btn-stk-plus { background: rgba(46, 204, 113, 0.25); color: #2ecc71; }
+        .btn-stk-plus:hover { background: #2ecc71; color: #fff; }
+
+        .btn-glow-blue { background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border: 1px solid rgba(0, 210, 255, 0.25); border-radius: 12px; }
+        .btn-glow-blue:hover { background: var(--neon-blue); color: #000; }
+        .btn-glow-warning { background: var(--neon-amber); color: #000; border: none; border-radius: 12px; font-weight: bold; }
+        .btn-glow-warning:hover { background: #ffe066; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm py-3 mb-4 sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning fs-4 d-flex align-items-center gap-2" href="/index">
+            <div style="border: 2px solid #ffc107; border-radius: 8px; padding: 2px; background: #111; display: flex; align-items: center; justify-content: center;">
+                <span class="fs-4">🍔</span>
+            </div>
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇻🇪</span>
+            </div>
+            <span class="mx-1 text-white fw-bold" style="font-size: 1.2rem; letter-spacing: 0.5px;">La ruta del carbón</span>
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇵🇪</span>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-secondary border-opacity-20" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+                <li class="nav-item"><a class="nav-link text-light px-3" href="/index">🏠 Inicio</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="/carta">📋 Ver Carta</a></li>
+                <li class="nav-item ms-2"><a class="nav-link active fw-bold text-warning px-3" href="/inventario" style="border-bottom: 2px solid var(--neon-amber);">📦 Inventario</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="/ventas">📑 Registro Ventas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-white m-0"><i class="bi bi-box-seam text-warning me-2"></i>Gestión de Inventario por Categorías</h1>
+            <p class="text-white-50 m-0">Organiza tus productos en carpetas, actualiza stock y administra categorías fácilmente.</p>
+        </div>
+    </div>
+
+    <!-- FORMULARIO DE CREACIÓN -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card card-premium h-100 p-2">
+                <div class="card-header-custom text-info fw-bold mb-2">
+                    <i class="bi bi-folder-plus me-2"></i>Nueva Categoría
+                </div>
+                <div class="card-body">
+                    <form action="/inventario/categoria" method="POST" class="h-100 d-flex flex-column justify-content-between gap-3">
+                        <div>
+                            <label class="form-label text-white-50 small fw-bold">Nombre de la Carpeta / Grupo</label>
+                            <input type="text" name="nombre" class="form-control form-control-dark" placeholder="Ej: Bebidas, Extras..." required>
+                        </div>
+                        <button type="submit" class="btn btn-glow-blue w-100 py-2 fw-bold">
+                            Crear Carpeta <i class="bi bi-folder-check ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card card-premium h-100 p-2">
+                <div class="card-header-custom text-warning fw-bold mb-2">
+                    <i class="bi bi-plus-circle me-2"></i>Nuevo Producto / Insumo
+                </div>
+                <div class="card-body">
+                    <form action="/inventario/producto" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">Nombre del Artículo</label>
+                                <input type="text" name="nombre" class="form-control form-control-dark" placeholder="Ej: Queso Cheddar" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">Seleccionar Carpeta Destino</label>
+                                <select name="categoriaId" class="form-select form-select-dark" required>
+                                    <option value="">-- Seleccionar Carpeta --</option>
+                                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">Precio de Venta ($)</label>
+                                <input type="number" step="0.01" name="precio" class="form-control form-control-dark" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">Stock Inicial</label>
+                                <input type="number" name="stock" class="form-control form-control-dark" value="0" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-glow-warning w-100 mt-4 py-2 fw-bold">
+                            Guardar Insumo <i class="bi bi-hdd-fill ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-4 mb-4 fw-bold text-white d-flex align-items-center">
+        <i class="bi bi-folder-fill text-warning me-2"></i>Carpetas de Inventario
+    </h3>
+
+    <!-- CARPETAS DE CATEGORÍAS EN GRID -->
+    <div class="row g-4">
+        <div th:each="cat : ${categorias}" class="col-md-4">
+            <div th:with="prodsInCat=${productos.?[categoria != null and categoria.id == #root.cat.id]},
+                         totalStock=${#aggregates.sum(prodsInCat.![stock])}"
+                 th:class="${totalStock != null and totalStock > 0} ? 'folder-card has-stock d-flex flex-column justify-content-between h-100' : 'folder-card no-stock d-flex flex-column justify-content-between h-100'">
+                <div>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="fs-1 folder-icon"><i class="bi bi-folder-fill"></i></span>
+
+                        <!-- Formulario de eliminación de carpeta: Oculto si es la categoría protegida -->
+                        <form th:if="${!#strings.containsIgnoreCase(cat.nombre, 'hamburguesa personalizada')}"
+                              th:action="@{'/inventario/categoria/eliminar/' + ${cat.id}}"
+                              method="POST"
+                              onsubmit="return confirmarEliminacionCarpeta(this);">
+                            <input type="hidden" name="claveConfirmacion" class="input-clave-hidden" value="">
+                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle p-2" title="Eliminar Carpeta">
+                                <i class="bi bi-trash3-fill fs-6"></i>
+                            </button>
+                        </form>
+
+                        <!-- Indicador visual para la carpeta protegida -->
+                        <span th:if="${#strings.containsIgnoreCase(cat.nombre, 'hamburguesa personalizada')}"
+                              class="badge bg-secondary bg-opacity-20 text-white-50 border border-secondary border-opacity-30 px-2 py-1 rounded-2 small"
+                              title="Carpeta protegida del sistema">
+                            🔒 Sistema
+                        </span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-1" th:text="${cat.nombre}">Nombre Categoría</h4>
+                    <p class="text-white-50 small mb-3">
+                        <i class="bi bi-box-seam me-1"></i>
+                        <span th:text="${#lists.size(prodsInCat)} + ' artículos en total'">0 artículos</span>
+                    </p>
+                    <div class="mb-3">
+                        <span th:if="${totalStock != null and totalStock > 0}" class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30 px-2 py-1 rounded-2 small">
+                            🟢 Stock Disponible: <strong th:text="${totalStock}">0</strong> unids.
+                        </span>
+                        <span th:if="${totalStock == null or totalStock == 0}" class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-30 px-2 py-1 rounded-2 small">
+                            🔴 Carpeta Vacía / Sin Stock
+                        </span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-glow-blue w-100 fw-bold py-2 btn-abrir-carpeta"
+                        th:data-cat-id="${cat.id}"
+                        th:data-cat-nombre="${cat.nombre}"
+                        onclick="abrirModalDesdeBoton(this)">
+                    Abrir Carpeta <i class="bi bi-folder2-open ms-1"></i>
+                </button>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(categorias)}" class="col-12 text-center py-5">
+            <i class="bi bi-folder-x fs-1 text-warning opacity-50 d-block mb-2"></i>
+            <h5 class="text-white-50">No hay carpetas registradas.</h5>
+            <p class="text-muted small">Crea una carpeta inicial usando el formulario superior.</p>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP MODAL CARPETA -->
+<div class="modal fade" id="modalCarpeta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content modal-content-custom shadow-lg">
+            <div class="modal-header border-secondary border-opacity-20 bg-dark py-3">
+                <h5 class="modal-title fw-bold text-warning d-flex align-items-center gap-2">
+                    <i class="bi bi-folder2-open fs-4 text-info"></i>
+                    Contenido de Carpeta: <span id="modal-titulo-carpeta" class="text-white"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 custom-table">
+                        <thead>
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 35%;">Artículo / Insumo</th>
+                            <th style="width: 20%;">Precio ($)</th>
+                            <th style="width: 25%;">Stock Disponible</th>
+                            <th style="width: 10%;" class="text-center">Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody id="modal-tabla-productos">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-secondary border-opacity-20 p-3">
+                <button type="button" class="btn btn-outline-secondary text-white rounded-3 px-4" data-bs-dismiss="modal">Cerrar Carpeta</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DATA ARRAY Y SCRIPTS -->
+<script th:inline="javascript">
+    const productosBaseDatos = [
+        /*[# th:each="p : ${productos}"]*/
+        {
+            id: /*[[${p.id}]]*/ 0,
+            nombre: /*[[${p.nombre}]]*/ '',
+            precio: /*[[${p.precio}]]*/ 0.0,
+            stock: /*[[${p.stock}]]*/ 0,
+            categoriaId: /*[[${p.categoria != null ? p.categoria.id : 0}]]*/ 0
+        },
+        /*[/]*/
+    ];
+
+    function confirmarEliminacionCarpeta(formElement) {
+        let palabra = prompt('Si desea eliminar esta carpeta, escriba la palabra clave "confirmo":');
+
+        if (palabra === null) {
+            return false;
+        }
+
+        if (palabra.trim().toLowerCase() === "confirmo") {
+            formElement.querySelector('.input-clave-hidden').value = palabra.trim();
+            return true;
+        } else {
+            alert("❌ Palabra clave incorrecta. No se eliminó la carpeta.");
+            return false;
+        }
+    }
+
+    function abrirModalDesdeBoton(btn) {
+        let catId = btn.getAttribute('data-cat-id');
+        let catNombre = btn.getAttribute('data-cat-nombre');
+
+        document.getElementById('modal-titulo-carpeta').innerText = catNombre;
+        let tbody = document.getElementById('modal-tabla-productos');
+        tbody.innerHTML = '';
+
+        let productosFiltrados = productosBaseDatos.filter(p => p.categoriaId == catId);
+
+        if (productosFiltrados.length > 0) {
+            productosFiltrados.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><span class="text-info fw-bold small">#${p.id}</span></td>
+                        <td><strong class="text-white fs-6">${p.nombre}</strong></td>
+                        <td><span class="text-warning fw-bold">$${Number(p.precio).toFixed(2)}</span></td>
+                        <td>
+                            <div class="stock-control-box">
+                                <button type="button" class="btn-stk-step btn-stk-minus" onclick="modificarStockServidor(${p.id}, -1, this)">-</button>
+                                <span class="fw-bold text-success mx-1 stock-val">${p.stock}</span>
+                                <span class="text-white-50 small me-1">unids</span>
+                                <button type="button" class="btn-stk-step btn-stk-plus" onclick="modificarStockServidor(${p.id}, 1, this)">+</button>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <form action="/inventario/producto/eliminar/${p.id}" method="POST" onsubmit="return confirm('¿Eliminar este insumo del inventario?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-circle">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-white-50">
+                        <i class="bi bi-info-circle me-1 text-warning"></i>
+                        Esta carpeta está vacía. Registra insumos asignados a esta categoría.
+                    </td>
+                </tr>
+            `;
+        }
+
+        let modal = new bootstrap.Modal(document.getElementById('modalCarpeta'));
+        modal.show();
+    }
+
+    function modificarStockServidor(productoId, cambio, btn) {
+        let box = btn.closest('.stock-control-box');
+        let spanVal = box.querySelector('.stock-val');
+        let actual = parseInt(spanVal.innerText);
+        let nuevo = actual + cambio;
+
+        if (nuevo >= 0) {
+            spanVal.innerText = nuevo;
+
+            let prod = productosBaseDatos.find(p => p.id == productoId);
+            if (prod) prod.stock = nuevo;
+
+            let formData = new FormData();
+            formData.append('id', productoId);
+            formData.append('stock', nuevo);
+
+            fetch('/inventario/producto/actualizar-stock', {
+                method: 'POST',
+                body: formData
+            })
+            .catch(err => console.error('Error al guardar en servidor:', err));
+        }
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm py-3 mb-4 sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning fs-4 tracking-wide d-flex align-items-center gap-2" href="/">
+            <!-- Contenedor del Logo Principal -->
+            <div style="border: 2px solid #ffc107; border-radius: 8px; padding: 2px; background: #111; display: flex; align-items: center; justify-content: center;">
+                <span class="fs-4">🍔</span>
+            </div>
+
+            <!-- Contenedor Bandera de Venezuela -->
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇻🇪</span>
+            </div>
+
+            <!-- Título del POS -->
+            <span class="mx-1 text-white fw-bold" style="font-size: 1.2rem; letter-spacing: 0.5px;">La ruta del carbón</span>
+
+            <!-- Contenedor Bandera de Perú -->
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇵🇪</span>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-secondary border-opacity-20" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+                <li class="nav-item"><a class="nav-link text-light px-3" href="/">🏠 Inicio</a></li>
+                <li class="nav-item ms-2"><a class="nav-link active fw-bold text-warning px-3" href="/" style="border-bottom: 2px solid var(--neon-amber);">📋 Ver Carta</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="#">📦 Inventario</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-muted opacity-50 px-3" href="#" onclick="return false;">👤 Cliente Especial</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="#">📑 Registro Ventas</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-muted opacity-50 px-3" href="#" onclick="return false;">⚙️ Modelo Negocios</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-3">
+              <span class="badge rounded-pill px-3 py-2 border border-danger border-opacity-50 text-danger fw-bold d-flex align-items-center gap-2" style="background: rgba(231, 76, 60, 0.1); font-size: 0.8rem; letter-spacing: 0.5px;">
+                  <span class="d-inline-block rounded-circle bg-danger animate-pulse" style="width: 8px; height: 8px; box-shadow: 0 0 8px #e74c3c;"></span>
+                  MÓDULO LOCAL
+              </span>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

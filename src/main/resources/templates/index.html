@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal - Burger POS Ultra</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --bg-principal: #0b0c10; --neon-amber: #ffc107; --neon-blue: #00d2ff; }
+        body { background-color: var(--bg-principal); color: #fff; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .navbar-custom { background: rgba(31, 40, 51, 0.7) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+        .hero-banner { background: linear-gradient(145deg, #181d26, #11141a); border-radius: 24px; border: 1px solid rgba(255, 193, 7, 0.15); padding: 3rem; text-center; }
+        .card-cyber { background: #19202b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; transition: all 0.3s ease; }
+        .card-cyber:hover { transform: translateY(-5px); border-color: var(--neon-amber); }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 mb-4 sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning fs-4 d-flex align-items-center gap-2" href="/index">
+            <span>🍔</span><span class="text-white">La ruta del carbón</span>
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto ms-3">
+                <li class="nav-item"><a class="nav-link active text-warning fw-bold" href="/index">🏠 Inicio</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="/carta">📋 Ver Carta</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="/inventario">📦 Inventario</a></li>
+                <li class="nav-item"><a class="nav-link text-light" href="/ventas">📑 Registro Ventas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <div class="hero-banner text-center mb-5">
+        <h1 class="fw-bold text-white mb-3">Control Operativo de Comandas</h1>
+        <p class="text-white-50">Sistema punto de venta integrado con control de inventario y registro comercial en tiempo real.</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a href="/carta" class="btn btn-warning btn-lg rounded-pill fw-bold">📋 Abrir Carta Interactiva</a>
+            <a href="/inventario" class="btn btn-outline-info btn-lg rounded-pill fw-bold">📦 Panel de Inventario</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card card-cyber h-100 p-3">
+                <h5 class="text-warning fw-bold">1. Terminal de Carta</h5>
+                <p class="text-white-50 small">Toma de comandas rápida por categorías y hamburguesas personalizadas.</p>
+                <a href="/carta" class="btn btn-sm btn-outline-warning mt-auto">Entrar →</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-cyber h-100 p-3">
+                <h5 class="text-info fw-bold">2. Gestión de Inventario</h5>
+                <p class="text-white-50 small">Administración de stock disponible, productos, insumos y categorías.</p>
+                <a href="/inventario" class="btn btn-sm btn-outline-info mt-auto">Entrar →</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-cyber h-100 p-3">
+                <h5 class="text-success fw-bold">3. Registro de Ventas</h5>
+                <p class="text-white-50 small">Auditoría fiscal de boletas y facturas emitidas en el sistema local.</p>
+                <a href="/ventas" class="btn btn-sm btn-outline-success mt-auto">Entrar →</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

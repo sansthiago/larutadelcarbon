@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ventas - La Ruta del Carbón</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --bg-principal: #0b0c10;
+            --bg-tarjetas: #19202b;
+            --neon-amber: #ffc107;
+            --neon-blue: #00d2ff;
+            --neon-green: #2ecc71;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            background-image:
+                radial-gradient(at 5% 5%, rgba(0, 210, 255, 0.06) 0px, transparent 45%),
+                radial-gradient(at 95% 95%, rgba(255, 193, 7, 0.04) 0px, transparent 45%);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .navbar-custom {
+            background: rgba(31, 40, 51, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
+
+        .custom-tab-content {
+            background: #121824 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        .form-control-dark {
+            background-color: #0f141c !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 10px 14px 10px 40px !important;
+        }
+        .form-control-dark::placeholder {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+        .form-control-dark:focus {
+            border-color: var(--neon-blue) !important;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.35) !important;
+            background-color: #131a24 !important;
+            color: #ffffff !important;
+        }
+
+        .search-box-wrapper {
+            position: relative;
+        }
+        .search-box-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-blue);
+        }
+
+        .custom-table {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+            --bs-table-bg: transparent !important;
+            --bs-table-color: #ffffff !important;
+            --bs-table-border-color: rgba(255, 255, 255, 0.05) !important;
+            --bs-table-hover-bg: rgba(0, 210, 255, 0.05) !important;
+        }
+
+        .custom-table thead th {
+            background-color: #0b0f17 !important;
+            color: var(--neon-blue) !important;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 14px 16px !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .custom-table tbody tr td {
+            color: #ffffff !important;
+            background-color: #121824 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 16px 16px !important;
+        }
+
+        .badge-tipo {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-boleta {
+            background: rgba(0, 210, 255, 0.15) !important;
+            color: var(--neon-blue) !important;
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+        }
+        .badge-factura {
+            background: rgba(255, 193, 7, 0.15) !important;
+            color: var(--neon-amber) !important;
+            border: 1px solid rgba(255, 193, 7, 0.3) !important;
+        }
+
+        .btn-view-detail {
+            background: rgba(0, 210, 255, 0.12);
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-view-detail:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.5);
+        }
+
+        .modal-content-custom {
+            background: #151c24 !important;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 20px;
+            color: #ffffff !important;
+        }
+        .ticket-box {
+            background: #0d121a !important;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .ticket-table {
+            width: 100% !important;
+            margin-bottom: 0 !important;
+            --bs-table-bg: transparent !important;
+            --bs-table-color: #ffffff !important;
+            --bs-table-border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        .ticket-table thead tr th {
+            background-color: #1a2332 !important;
+            color: var(--neon-blue) !important;
+            border-bottom: 2px solid rgba(0, 210, 255, 0.3) !important;
+            padding: 8px 6px !important;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .ticket-table tbody tr td {
+            background-color: #0d121a !important;
+            color: #ffffff !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            padding: 8px 6px !important;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 576px) {
+            .modal-dialog {
+                margin: 0.5rem auto !important;
+                max-width: 94% !important;
+            }
+            .modal-body {
+                padding: 12px !important;
+            }
+            .ticket-box {
+                padding: 10px !important;
+            }
+        }
+
+        @media print {
+            @page {
+                size: 80mm auto;
+                margin: 0;
+            }
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #modalDetalleVenta,
+            #modalDetalleVenta * {
+                visibility: visible !important;
+            }
+
+            #modalDetalleVenta {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .modal-dialog {
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
+
+            .modal-content-custom {
+                background: #ffffff !important;
+                color: #000000 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .modal-header, .modal-footer, .btn-close {
+                display: none !important;
+            }
+
+            .ticket-box {
+                background: #ffffff !important;
+                border: none !important;
+                color: #000000 !important;
+                padding: 4mm !important;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+
+            .ticket-box *,
+            .ticket-box h5,
+            .ticket-box strong,
+            .ticket-box span,
+            .ticket-box small {
+                color: #000000 !important;
+                font-family: 'Courier New', Courier, monospace !important;
+            }
+
+            .ticket-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+
+            .ticket-table thead tr th {
+                background-color: transparent !important;
+                color: #000000 !important;
+                border-bottom: 1px dashed #000000 !important;
+                padding: 2px 0 !important;
+                font-size: 11px !important;
+            }
+
+            .ticket-table tbody tr td {
+                background-color: transparent !important;
+                color: #000000 !important;
+                border-bottom: 1px dotted #ccc !important;
+                padding: 3px 0 !important;
+                font-size: 11px !important;
+            }
+
+            #modal-total-monto {
+                color: #000000 !important;
+                font-weight: 900 !important;
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm py-3 mb-4 sticky-top">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold text-warning fs-4 d-flex align-items-center gap-2" href="/index">
+            <div style="border: 2px solid #ffc107; border-radius: 8px; padding: 2px; background: #111; display: flex; align-items: center; justify-content: center;">
+                <span class="fs-4">🍔</span>
+            </div>
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇻🇪</span>
+            </div>
+            <span class="mx-1 text-white fw-bold" style="font-size: 1.2rem; letter-spacing: 0.5px;">La ruta del carbón</span>
+            <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border-radius: 6px; padding: 2px;">
+                <span style="font-size: 1rem;">🇵🇪</span>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-secondary border-opacity-20" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto ms-3">
+                <li class="nav-item"><a class="nav-link text-light px-3" href="/index">🏠 Inicio</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="/carta">📋 Ver Carta</a></li>
+                <li class="nav-item ms-2"><a class="nav-link text-light px-3" href="/inventario">📦 Inventario</a></li>
+                <li class="nav-item ms-2"><a class="nav-link active fw-bold text-warning px-3" href="/ventas" style="border-bottom: 2px solid var(--neon-amber);">📑 Registro Ventas</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mb-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold text-white m-0"><i class="bi bi-receipt text-info me-2"></i>Historial de Ventas</h1>
+            <p class="text-white-50 m-0">Comprobantes emitidos en caja y auditoría de transacciones.</p>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA DINÁMICA -->
+        <div class="search-box-wrapper" style="min-width: 300px;">
+            <i class="bi bi-search"></i>
+            <input type="text" id="inputBuscadorVentas" class="form-control form-control-dark" placeholder="Buscar cliente o N° comprobante..." onkeyup="filtrarVentas()">
+        </div>
+    </div>
+
+    <!-- TABLA DE VENTAS REGISTRADAS -->
+    <div class="custom-tab-content p-3">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 custom-table">
+                <thead>
+                <tr>
+                    <th style="width: 20%;">N° Comprobante</th>
+                    <th style="width: 15%;">Tipo</th>
+                    <th style="width: 30%;">Nombre / Cliente</th>
+                    <th style="width: 20%;" class="text-end">Monto Total</th>
+                    <th style="width: 15%;" class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tablaVentasBody">
+                <tr th:each="v : ${ventas}" class="fila-venta">
+                    <td>
+                        <span class="text-info fw-bold fs-6 col-comprobante" th:text="${v.numeroComprobante ?: ('B001-' + v.id)}">B001-00000001</span>
+                    </td>
+                    <td>
+                        <span th:class="${v.tipoComprobante == 'Factura'} ? 'badge-tipo badge-factura col-tipo' : 'badge-tipo badge-boleta col-tipo'"
+                              th:text="${v.tipoComprobante ?: 'Boleta'}">Boleta</span>
+                    </td>
+                    <td>
+                        <span class="text-white fw-semibold col-cliente" th:text="${v.nombreCliente ?: 'Público General'}">Público General</span>
+                    </td>
+                    <td class="text-end">
+                        <span class="text-success fw-bold fs-6" th:text="'$' +${#numbers.formatDecimal(v.total ?: 0, 1, 2)}">$0.00</span>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-view-detail" th:onclick="'cargarDetalleVenta(' + ${v.id} + ')'">
+                            <i class="bi bi-eye-fill me-1"></i> Ver Boleta
+                        </button>
+                    </td>
+                </tr>
+                <tr id="rowSinResultados" style="display: none;">
+                    <td colspan="5" class="text-center py-5 text-white-50">
+                        <i class="bi bi-search fs-2 d-block mb-2 text-warning opacity-50"></i>
+                        No se encontraron comprobantes que coincidan con la búsqueda.
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ventas)}">
+                    <td colspan="5" class="text-center py-5 text-white-50">
+                        <i class="bi bi-receipt-cutoff fs-2 d-block mb-2 text-warning opacity-50"></i>
+                        No se registran ventas emitidas.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMPROBANTE DIGITAL -->
+<div class="modal fade" id="modalDetalleVenta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-content-custom shadow-lg">
+            <div class="modal-header border-secondary border-opacity-20 bg-dark text-warning py-3">
+                <h5 class="modal-title fw-bold fs-6"><i class="bi bi-ticket-perforated me-2"></i>Comprobante Digital</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="ticket-box">
+                    <div class="text-center pb-2 border-bottom border-secondary border-opacity-20 mb-3">
+                        <h5 class="fw-bold text-warning mb-1">🍔 LA RUTA DEL CARBÓN</h5>
+                        <small class="text-white-50 d-block">RUC: 20123456789</small>
+                        <small class="text-white-50 d-block fw-bold" id="modal-comprobante-num">N° B001-00000000</small>
+                    </div>
+
+                    <div class="row g-2 mb-3 small">
+                        <div class="col-6">
+                            <span class="text-white-50 d-block">Cliente:</span>
+                            <strong class="text-white text-truncate d-block" id="modal-cliente-nom">PÚBLICO GENERAL</strong>
+                        </div>
+                        <div class="col-6 text-end">
+                            <span class="text-white-50 d-block">Doc/DNI:</span>
+                            <strong class="text-white" id="modal-cliente-doc">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table ticket-table mb-3">
+                            <thead>
+                            <tr>
+                                <th style="width: 15%;">Cant.</th>
+                                <th style="width: 45%;">Producto</th>
+                                <th style="width: 20%;" class="text-end">P.Unit</th>
+                                <th style="width: 20%;" class="text-end">Subtotal</th>
+                            </tr>
+                            </thead>
+                            <tbody id="modal-lista-detalles">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pt-2 border-top border-secondary border-opacity-20 d-flex justify-content-between align-items-center">
+                        <span class="fs-6 text-white-50 fw-bold">TOTAL PAGADO:</span>
+                        <span class="fs-4 fw-black text-success" id="modal-total-monto">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-secondary border-opacity-20 p-2">
+                <button type="button" class="btn btn-outline-secondary text-white px-3 rounded-3 btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning text-dark fw-bold px-3 rounded-3 btn-sm" onclick="window.print()">
+                    <i class="bi bi-printer-fill me-1"></i> Imprimir Comprobante
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function filtrarVentas() {
+        let input = document.getElementById('inputBuscadorVentas').value.toLowerCase().trim();
+        let filas = document.querySelectorAll('.fila-venta');
+        let contadorVisibles = 0;
+
+        filas.forEach(fila => {
+            let comprobante = fila.querySelector('.col-comprobante')?.innerText.toLowerCase() || '';
+            let cliente = fila.querySelector('.col-cliente')?.innerText.toLowerCase() || '';
+            let tipo = fila.querySelector('.col-tipo')?.innerText.toLowerCase() || '';
+
+            if (comprobante.includes(input) || cliente.includes(input) || tipo.includes(input)) {
+                fila.style.display = '';
+                contadorVisibles++;
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        let rowSinResultados = document.getElementById('rowSinResultados');
+        if (rowSinResultados) {
+            rowSinResultados.style.display = (contadorVisibles === 0 && filas.length > 0) ? '' : 'none';
+        }
+    }
+
+    function cargarDetalleVenta(ventaId) {
+        fetch('/api/ventas/' + ventaId)
+            .then(res => res.json())
+            .then(venta => {
+                document.getElementById('modal-comprobante-num').innerText = 'N° ' + (venta.numeroComprobante || ('B001-' + String(venta.id).padStart(8, '0')));
+                document.getElementById('modal-cliente-nom').innerText = venta.nombreCliente || 'PÚBLICO GENERAL';
+                document.getElementById('modal-cliente-doc').innerText = (venta.documentoCliente && venta.documentoCliente.trim().length > 0) ? venta.documentoCliente : '-';
+                document.getElementById('modal-total-monto').innerText = '$' + (venta.total ? Number(venta.total).toFixed(2) : '0.00');
+
+                let tbody = document.getElementById('modal-lista-detalles');
+                tbody.innerHTML = '';
+
+                let detalles = venta.detalles || venta.items || [];
+
+                if (detalles.length > 0) {
+                    detalles.forEach(d => {
+                        let cantidad = d.cantidad || d.qty || 1;
+                        let nomProd = (d.producto && d.producto.nombre) ? d.producto.nombre : (d.nombreProducto || 'Producto');
+                        let precioUnit = d.precioUnitario || (d.producto ? d.producto.precio : 0);
+                        let subtotal = d.subtotal || (Number(precioUnit) * Number(cantidad));
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="fw-bold text-warning">${cantidad}x</td>
+                                <td class="text-white">${nomProd}</td>
+                                <td class="text-end text-white-50">$${Number(precioUnit).toFixed(2)}</td>
+                                <td class="text-end fw-bold text-success">$${Number(subtotal).toFixed(2)}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Sin detalles de ítems registrados.</td></tr>';
+                }
+
+                let modal = new bootstrap.Modal(document.getElementById('modalDetalleVenta'));
+                modal.show();
+            })
+            .catch(err => {
+                console.error('Error al obtener detalle:', err);
+                alert('❌ No se pudo cargar el detalle del comprobante.');
+            });
+    }
+</script>
+</body>
+</html>
